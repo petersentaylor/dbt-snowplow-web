@@ -10,6 +10,10 @@ select
   a.user_id,
   a.domain_userid,
   a.network_userid,
+  b.converted_user,
+  b.converted_date,
+  b.first_sessionid,
+  b.last_sessionid,
 
   b.start_tstamp,
   b.end_tstamp,
@@ -23,7 +27,8 @@ select
 
   -- first page fields
   a.first_page_title,
-
+  b.first_page_view_id,
+  b.first_page_view_event_id,
   a.first_page_url,
 
   a.first_page_urlscheme,
@@ -33,7 +38,8 @@ select
   a.first_page_urlfragment,
 
   c.last_page_title,
-
+  b.last_page_view_id,
+  b.last_page_view_event_id,
   c.last_page_url,
 
   c.last_page_urlscheme,

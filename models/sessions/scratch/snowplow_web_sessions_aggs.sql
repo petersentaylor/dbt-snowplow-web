@@ -10,6 +10,9 @@ select
   min(start_tstamp) as start_tstamp,
   max(end_tstamp) as end_tstamp,
 
+  {{ snowplow_web.bool_or("converted_pageview") }} as converted_session,
+  max(converted_date) as converted_date,
+
   -- engagement
   count(distinct page_view_id) as page_views,
   sum(engaged_time_in_s) as engaged_time_in_s

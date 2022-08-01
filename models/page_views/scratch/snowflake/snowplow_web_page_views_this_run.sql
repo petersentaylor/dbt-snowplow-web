@@ -1,8 +1,8 @@
-{{ 
+{{
   config(
     tags=["this_run"],
     sql_header=snowplow_utils.set_query_tag(var('snowplow__query_tag', 'snowplow_dbt'))
-  ) 
+  )
 }}
 
 with prep as (
@@ -178,7 +178,7 @@ select
   {% endif %}
 
   from {{ ref('snowplow_web_base_events_this_run') }} as ev
-  
+
   where ev.event_name = 'page_view'
   and ev.page_view_id is not null
 
@@ -187,6 +187,12 @@ select
   {% endif %}
 
   qualify row_number() over (partition by ev.page_view_id order by ev.derived_tstamp) = 1
+), salesforce_leads AS (
+    select domain_userid__c,
+    MAX(converteddate) as converteddate
+
+    FROM stitch_db.salesforce.lead as l
+    GROUP BY 1
 )
 
 , page_view_events as (
@@ -217,6 +223,8 @@ select
 
     coalesce(t.engaged_time_in_s, 0) as engaged_time_in_s, -- where there are no pings, engaged time is 0.
     timediff(second, p.derived_tstamp, coalesce(t.end_tstamp, p.derived_tstamp))  as absolute_time_in_s,
+
+    l.converteddate as converted_date,
 
     sd.hmax as horizontal_pixels_scrolled,
     sd.vmax as vertical_pixels_scrolled,
@@ -320,6 +328,8 @@ select
 
   left join {{ ref('snowplow_web_pv_scroll_depth') }} sd
   on p.page_view_id = sd.page_view_id
+
+  left join salesforce_leads as l on p.domain_userid = l.domain_userid__c
 )
 
 select
@@ -339,6 +349,8 @@ select
 
   pve.page_view_in_session_index,
   max(pve.page_view_in_session_index) over (partition by pve.domain_sessionid) as page_views_in_session,
+  pve.converted_date,
+  DATE(pve.converted_date) = DATE(pve.derived_tstamp) AND pve.page_view_in_session_index = page_views_in_session as converted_pageview,
 
   -- timestamp fields
   pve.dvce_created_tstamp,

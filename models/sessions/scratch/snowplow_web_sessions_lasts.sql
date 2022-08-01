@@ -6,7 +6,9 @@
 
 select
   a.domain_sessionid,
+  a.page_view_id as last_page_view_id,
   a.page_title as last_page_title,
+  a.event_id as last_page_view_event_id,
 
   a.page_url as last_page_url,
 

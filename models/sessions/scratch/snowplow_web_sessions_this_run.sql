@@ -30,6 +30,8 @@ select
   {% endif %}
 
   a.network_userid,
+  b.converted_session,
+  b.converted_date,
 
   -- engagement fields
   b.page_views,
@@ -38,7 +40,8 @@ select
 
   -- first page fields
   a.page_title as first_page_title,
-
+  a.page_view_id as first_page_view_id,
+  a.event_id as first_page_view_event_id,
   a.page_url as first_page_url,
 
   a.page_urlscheme as first_page_urlscheme,
@@ -48,7 +51,8 @@ select
   a.page_urlfragment as first_page_urlfragment,
 
   c.last_page_title,
-
+  c.last_page_view_id,
+  c.last_page_view_event_id,
   c.last_page_url,
 
   c.last_page_urlscheme,
